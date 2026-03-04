@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results - {{ app_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="/" style="text-decoration: none; color: var(--primary-color); font-weight: 600;">&larr; Back to Home</a>
+        
+        <div class="glass-card" style="margin-top: 20px;">
+            <div class="result-header">
+                {% if app_icon %}
+                <img src="{{ app_icon }}" alt="{{ app_name }}" class="app-icon">
+                {% endif %}
+                <div>
+                    <h2>{{ app_name }}</h2>
+                    <p>Analysis based on {{ reviews|length }} reviews</p>
+                </div>
+            </div>
+
+            <h3>Overall Sentiment</h3>
+            <div class="sentiment-bar">
+                <div class="bar-segment pos" style="width: {{ summary_percent.positive }}%" title="Positive: {{ summary_percent.positive|round(1) }}%"></div>
+                <div class="bar-segment neu" style="width: {{ summary_percent.neutral }}%" title="Neutral: {{ summary_percent.neutral|round(1) }}%"></div>
+                <div class="bar-segment neg" style="width: {{ summary_percent.negative }}%" title="Negative: {{ summary_percent.negative|round(1) }}%"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                <span>😊 Positive: {{ summary_percent.positive|round(1) }}%</span>
+                <span>😐 Neutral: {{ summary_percent.neutral|round(1) }}%</span>
+                <span>😞 Negative: {{ summary_percent.negative|round(1) }}%</span>
+            </div>
+
+            <h3 style="margin-top: 40px;">Feature Analysis</h3>
+            <div class="feature-grid">
+                {% for feature, data in feature_analysis.items() %}
+                <div class="feature-card">
+                    <h4>{{ feature }}</h4>
+                    {% if data.count > 0 %}
+                        <div style="margin-bottom: 10px;">
+                            <span class="tag tag-pos">Pos: {{ data.positive }}</span>
+                            <span class="tag tag-neu">Neu: {{ data.neutral }}</span>
+                            <span class="tag tag-neg">Neg: {{ data.negative }}</span>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #6b7280;">Mentioned in {{ data.count }} reviews</p>
+                    {% else %}
+                        <p style="font-size: 0.8rem; color: #9ca3af;">No mentions found</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <button onclick="document.getElementById('reviewModal').style.display='block'" style="margin-top: 40px;">View All Reviews with Sentiment</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('reviewModal').style.display='none'">&times;</span>
+            <h2>Detailed Reviews</h2>
+            <div class="reviews-list">
+                {% for r in reviews %}
+                <div class="review-item">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>{{ r.userName }}</strong>
+                        <span class="tag tag-{{ r.sentiment[:3] }}">{{ r.sentiment.capitalize() }}</span>
+                    </div>
+                    <div style="color: #f59e0b; margin: 5px 0;">
+                        {% for i in range(r.rating) %}★{% endfor %}
+                    </div>
+                    <p><em>"{{ r.title }}"</em></p>
+                    <p>{{ r.review }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onclick = function(event) {
+            let modal = document.getElementById('reviewModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

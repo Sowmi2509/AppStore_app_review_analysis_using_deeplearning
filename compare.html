@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Comparison - Review Lens</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="/" style="text-decoration: none; color: var(--primary-color); font-weight: 600;">&larr; Back to Home</a>
+        
+        <div class="title-section" style="margin-top: 20px;">
+            <h2>Comparison Results</h2>
+            <div class="glass-card" style="background: #e0f2fe; border: 2px solid #3b82f6; display: inline-block; padding: 15px 30px;">
+                <h3 style="margin: 0; color: #1e40af;">Recommendation: {{ recommendation }}</h3>
+            </div>
+        </div>
+
+        <div class="options-grid" style="grid-template-columns: 1fr 1fr;">
+            <!-- App 1 -->
+            <div class="glass-card">
+                <div class="result-header" style="flex-direction: column; text-align: center;">
+                    {% if app1.icon %}
+                    <img src="{{ app1.icon }}" alt="{{ app1.name }}" class="app-icon">
+                    {% endif %}
+                    <h3>{{ app1.name }}</h3>
+                </div>
+                
+                <div class="sentiment-bar">
+                    <div class="bar-segment pos" style="width: {{ app1.analysis.summary_percent.positive }}%"></div>
+                    <div class="bar-segment neu" style="width: {{ app1.analysis.summary_percent.neutral }}%"></div>
+                    <div class="bar-segment neg" style="width: {{ app1.analysis.summary_percent.negative }}%"></div>
+                </div>
+                
+                <div style="font-size: 0.9rem;">
+                    <p>😊 Pos: {{ app1.analysis.summary_percent.positive|round(1) }}%</p>
+                    <p>😐 Neu: {{ app1.analysis.summary_percent.neutral|round(1) }}%</p>
+                    <p>😞 Neg: {{ app1.analysis.summary_percent.negative|round(1) }}%</p>
+                </div>
+
+                <button onclick="document.getElementById('modal1').style.display='block'" style="margin-top: 20px; width: 100%;">
+                    View All Reviews with Sentiment
+                </button>
+            </div>
+
+            <!-- App 2 -->
+            <div class="glass-card">
+                <div class="result-header" style="flex-direction: column; text-align: center;">
+                    {% if app2.icon %}
+                    <img src="{{ app2.icon }}" alt="{{ app2.name }}" class="app-icon">
+                    {% endif %}
+                    <h3>{{ app2.name }}</h3>
+                </div>
+                
+                <div class="sentiment-bar">
+                    <div class="bar-segment pos" style="width: {{ app2.analysis.summary_percent.positive }}%"></div>
+                    <div class="bar-segment neu" style="width: {{ app2.analysis.summary_percent.neutral }}%"></div>
+                    <div class="bar-segment neg" style="width: {{ app2.analysis.summary_percent.negative }}%"></div>
+                </div>
+
+                <div style="font-size: 0.9rem;">
+                    <p>😊 Pos: {{ app2.analysis.summary_percent.positive|round(1) }}%</p>
+                    <p>😐 Neu: {{ app2.analysis.summary_percent.neutral|round(1) }}%</p>
+                    <p>😞 Neg: {{ app2.analysis.summary_percent.negative|round(1) }}%</p>
+                </div>
+
+                <button onclick="document.getElementById('modal2').style.display='block'" style="margin-top: 20px; width: 100%;">
+                    View All Reviews with Sentiment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for App 1 -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('modal1').style.display='none'">&times;</span>
+            <h2>{{ app1.name }} — Detailed Reviews</h2>
+            <div class="reviews-list">
+                {% for r in app1.analysis.reviews %}
+                <div class="review-item">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>{{ r.userName }}</strong>
+                        <span class="tag tag-{{ r.sentiment[:3] }}">{{ r.sentiment.capitalize() }}</span>
+                    </div>
+                    <div style="color: #f59e0b; margin: 5px 0;">
+                        {% for i in range(r.rating) %}★{% endfor %}
+                    </div>
+                    <p><em>"{{ r.title }}"</em></p>
+                    <p>{{ r.review }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for App 2 -->
+    <div id="modal2" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('modal2').style.display='none'">&times;</span>
+            <h2>{{ app2.name }} — Detailed Reviews</h2>
+            <div class="reviews-list">
+                {% for r in app2.analysis.reviews %}
+                <div class="review-item">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong>{{ r.userName }}</strong>
+                        <span class="tag tag-{{ r.sentiment[:3] }}">{{ r.sentiment.capitalize() }}</span>
+                    </div>
+                    <div style="color: #f59e0b; margin: 5px 0;">
+                        {% for i in range(r.rating) %}★{% endfor %}
+                    </div>
+                    <p><em>"{{ r.title }}"</em></p>
+                    <p>{{ r.review }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onclick = function(event) {
+            ['modal1', 'modal2'].forEach(function(id) {
+                let modal = document.getElementById(id);
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

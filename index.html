@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Lens - App Store Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="title-section">
+            <h1>Review Lens</h1>
+            <p>Analyze App Store reviews using Deep Learning (BERT)</p>
+        </div>
+
+        {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="options-grid">
+            <div class="glass-card mode-card" onclick="showMode('single')">
+                <h3>Single App Analysis</h3>
+                <p>Paste one URL to get deep insights into sentiment and features.</p>
+                <div id="single-form" class="input-group" style="display: none;" onclick="event.stopPropagation()">
+                    <form action="/analyze" method="POST">
+                        <input type="text" name="url" placeholder="Paste App Store URL here..." required>
+                        <button type="submit">Analyze Reviews</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="glass-card mode-card" onclick="showMode('compare')">
+                <h3>App Comparison</h3>
+                <p>Compare two applications to see which one users prefer.</p>
+                <div id="compare-form" class="input-group" style="display: none;" onclick="event.stopPropagation()">
+                    <form action="/compare" method="POST">
+                        <input type="text" name="url1" placeholder="First App URL..." required>
+                        <input type="text" name="url2" placeholder="Second App URL..." required>
+                        <button type="submit">Compare Apps</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showMode(mode) {
+            document.getElementById('single-form').style.display = mode === 'single' ? 'block' : 'none';
+            document.getElementById('compare-form').style.display = mode === 'compare' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>
